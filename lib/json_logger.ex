@@ -60,6 +60,7 @@ defmodule Logger.Backends.JSON do
     metadata = Keyword.get(json_logger, :metadata, [])
     output   = Keyword.get(json_logger, :output, :console)
     output = case output do
+               :log_file -> :log_file
                :console -> :console
                {:udp, host, port} ->
                  {:ok, socket} = :gen_udp.open 0
@@ -74,6 +75,10 @@ defmodule Logger.Backends.JSON do
   end
 
   defp log_event(level, msg, ts, md, %{metadata: metadata, output: :console}) do
+    IO.puts event_json(level, msg, ts, md, metadata)
+  end
+  
+  defp log_event(level, msg, ts, md, %{metadata: metadata, output: :log_file}) do
     IO.puts event_json(level, msg, ts, md, metadata)
   end
 
